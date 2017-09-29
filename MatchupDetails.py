@@ -77,7 +77,7 @@ def getMatchupDetails(leagueId, leagueName, seasonId, leagueSize, beginWeek=None
                 
                     owner1 = ownerDivs[0].get_text()
                     if len(ownerDivs) == 1:
-                        # print 'only 1 owner'
+                        raise ValueError("only 1 owner")
                     else:
                         owner2 = ownerDivs[1].get_text()		
                         
