@@ -9,3 +9,6 @@ name = "pypi"
 [packages]
 flask = "*"
 gunicorn = "*"
+lxml = "*"
+BeautifulSoup = "*"
+requests = "*"
