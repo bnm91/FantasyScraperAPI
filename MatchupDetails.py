@@ -57,7 +57,7 @@ def getMatchupDetails(leagueId, leagueName, seasonId, leagueSize, beginWeek=None
         csvList.append(commaSeparateValues(headerRow))
 
         for wk in range(beginWeek, endWeek + 1):
-            print wk
+            # print wk
             owners = []
         
             for teamId in range(1, int(leagueSize) + 1):
@@ -77,7 +77,7 @@ def getMatchupDetails(leagueId, leagueName, seasonId, leagueSize, beginWeek=None
                 
                     owner1 = ownerDivs[0].get_text()
                     if len(ownerDivs) == 1:
-                        print 'only 1 owner'
+                        # print 'only 1 owner'
                     else:
                         owner2 = ownerDivs[1].get_text()		
                         
@@ -147,7 +147,7 @@ def getMatchupDetails(leagueId, leagueName, seasonId, leagueSize, beginWeek=None
                                         nflTeam = ''
                                     else:
                                         if ', ' in s:
-                                            print s
+                                            # print s
                                             start = s.rindex(', ') + len (', ')
                                             e = s.find(u'\xa0')
                                             print s.split(u'\xa0')[1]
