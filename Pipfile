@@ -7,8 +7,9 @@ name = "pypi"
 
 
 [packages]
+
 flask = "*"
 gunicorn = "*"
 lxml = "*"
-BeautifulSoup4 = "*"
+"beautifulsoup4" = "*"
 requests = "*"
