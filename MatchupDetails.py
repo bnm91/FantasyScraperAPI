@@ -150,7 +150,7 @@ def getMatchupDetails(leagueId, leagueName, seasonId, leagueSize, beginWeek=None
                                             # print s
                                             start = s.rindex(', ') + len (', ')
                                             e = s.find(u'\xa0')
-                                            print s.split(u'\xa0')[1]
+                                            # print s.split(u'\xa0')[1]
                                             nflTeam = s[start:e]
                                             nflPosition = s.split(u'\xa0')[1]
                                 
