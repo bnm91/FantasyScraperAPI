@@ -26,8 +26,8 @@ def get_matchup_details():
         elif request.args.get('leagueSize') == None:
             return 'error: leagueSize not sepcified'
         else:
-            outputString = MatchupDetails.get_matchup_details(request.args.get('leagueId'), request.args.get('leagueName'), request.args.get('seasonId'), request.args.get('leagueSize'),  1, 1)
-            return outputString
+            output_string = MatchupDetails.get_matchup_details(request.args.get('leagueId'), request.args.get('leagueName'), request.args.get('seasonId'), request.args.get('leagueSize'),  1, 1)
+            return output_string
             # return {'text': 'testText'}
             # return 'text \r\n text'
 
