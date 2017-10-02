@@ -1,98 +1,7 @@
-
 from bs4 import BeautifulSoup
 import lxml
 import requests
 import os, csv
-
-
-def comma_separate_values(row_dict):
-    row_string = ''
-    row_string += row_dict['Owner'] + ','
-    row_string += row_dict['Player'] + ','
-    row_string += row_dict['Week'] + ','
-    row_string += row_dict['Season'] + ','
-    row_string += row_dict['Player_Opponent'] + ','
-    row_string += row_dict['Player_Home'] + ','
-    row_string += row_dict['Points'] + ','
-    row_string += row_dict['Roster_Slot'] + ','
-    row_string += row_dict['League'] + ','
-    row_string += row_dict['nfl_team'] + ','
-    row_string += row_dict['nfl_position']
-
-    return row_string
-
-def csv_list_to_csv_string(csv_list):
-    csv_string = ''
-    for row in csv_list:
-        csv_string += row
-        csv_string += ' <br />'
-    return csv_string
-
-
-def find_between_r(s, first):
-    try:
-        start = s.rindex(first) + len(first)
-        end = s.find(u'\xa0')
-        return s[start:end]
-    except ValueError:
-        return ""
-
-
-def get_player_row(row, home):
-
-    return_row = {}
-    columns = row.findChildren('td')
-    
-    player_anchors = columns[1].find_all('a')
-
-    if not player_anchors:
-        return_row['player_name'] = ''
-    else:
-        return_row['player_name'] = player_anchors[0].get_text()
-    
-    return_row['roster_slot'] = columns[0].get_text()
-    return_row['player_opponent'] = columns[2].get_text()
-    return_row['home'] = home
-
-    if '@' in return_row['player_opponent']:
-        return_row['home'] = 0
-        return_row['player_opponent'] = return_row['player_opponent'][1:]
-    
-    if  'BYE' in columns[2].get_text():
-        return_row['points'] = columns[3].get_text()
-        return_row['home']  = 1
-    else:
-        return_row['points'] = columns[4].get_text()
-        
-    if '--' in return_row['points']:
-        return_row['points'] = '0'
-    
-    if columns[1] is None:
-        s=''
-    else:
-        s = columns[1].get_text()
-        
-        return_row['nfl_position'] = ''
-        return_row['nfl_team'] = ''
-        
-        if 'D/ST' in s:
-            return_row['nfl_position'] = 'D/ST'
-            return_row['nfl_team'] = ''
-        else:
-            if ', ' in s:
-                print s
-                start = s.rindex(', ') + len (', ')
-                e = s.find(u'\xa0')
-                print s.split(u'\xa0')[1]
-                return_row['nfl_team'] = s[start:e]
-                return_row['nfl_position'] = s.split(u'\xa0')[1]
-
-    return return_row
-
-
-def create_csv_row(player_data, owner, week, season_id, league_name):
-    csv_row = {'Owner': owner, 'Player': player_data['player_name'], 'Week':str(week), 'Season':str(season_id), 'Player_Opponent':player_data['player_opponent'], 'Player_Home':str(player_data['home']), 'Points':player_data['points'], 'Roster_Slot':player_data['roster_slot'], 'League':str(league_name), 'nfl_team': player_data['nfl_team'], 'nfl_position':player_data['nfl_position']}
-    return comma_separate_values(csv_row)
 
 
 #
@@ -180,3 +89,97 @@ def get_matchup_details(league_id, league_name, season_id, league_size, begin_we
         return csv_list_to_csv_string(csv_list)            
     except Exception as ex:
         return 'Error occurred : ' + str(ex)
+
+
+def get_player_row(row, home):
+
+    return_row = {}
+    columns = row.findChildren('td')
+    
+    player_anchors = columns[1].find_all('a')
+
+    if not player_anchors:
+        return_row['player_name'] = ''
+    else:
+        return_row['player_name'] = player_anchors[0].get_text()
+    
+    return_row['roster_slot'] = columns[0].get_text()
+    return_row['player_opponent'] = columns[2].get_text()
+    return_row['home'] = home
+
+    if '@' in return_row['player_opponent']:
+        return_row['home'] = 0
+        return_row['player_opponent'] = return_row['player_opponent'][1:]
+    
+    if  'BYE' in columns[2].get_text():
+        return_row['points'] = columns[3].get_text()
+        return_row['home']  = 1
+    else:
+        return_row['points'] = columns[4].get_text()
+        
+    if '--' in return_row['points']:
+        return_row['points'] = '0'
+    
+    if columns[1] is None:
+        s=''
+    else:
+        s = columns[1].get_text()
+        
+        return_row['nfl_position'] = ''
+        return_row['nfl_team'] = ''
+        
+        if 'D/ST' in s:
+            return_row['nfl_position'] = 'D/ST'
+            return_row['nfl_team'] = ''
+        else:
+            if ', ' in s:
+                print s
+                start = s.rindex(', ') + len (', ')
+                e = s.find(u'\xa0')
+                print s.split(u'\xa0')[1]
+                return_row['nfl_team'] = s[start:e]
+                return_row['nfl_position'] = s.split(u'\xa0')[1]
+
+    return return_row
+
+
+def create_csv_row(player_data, owner, week, season_id, league_name):
+    csv_row = {'Owner': owner, 'Player': player_data['player_name'], 'Week':str(week), 'Season':str(season_id), 'Player_Opponent':player_data['player_opponent'], 'Player_Home':str(player_data['home']), 'Points':player_data['points'], 'Roster_Slot':player_data['roster_slot'], 'League':str(league_name), 'nfl_team': player_data['nfl_team'], 'nfl_position':player_data['nfl_position']}
+    return comma_separate_values(csv_row)
+
+
+def comma_separate_values(row_dict):
+    row_string = ''
+    row_string += row_dict['Owner'] + ','
+    row_string += row_dict['Player'] + ','
+    row_string += row_dict['Week'] + ','
+    row_string += row_dict['Season'] + ','
+    row_string += row_dict['Player_Opponent'] + ','
+    row_string += row_dict['Player_Home'] + ','
+    row_string += row_dict['Points'] + ','
+    row_string += row_dict['Roster_Slot'] + ','
+    row_string += row_dict['League'] + ','
+    row_string += row_dict['nfl_team'] + ','
+    row_string += row_dict['nfl_position']
+
+    return row_string
+
+def csv_list_to_csv_string(csv_list):
+    csv_string = ''
+    for row in csv_list:
+        csv_string += row
+        csv_string += ' <br />'
+    return csv_string
+
+
+def find_between_r(s, first):
+    try:
+        start = s.rindex(first) + len(first)
+        end = s.find(u'\xa0')
+        return s[start:end]
+    except ValueError:
+        return ""
+
+
+
+
