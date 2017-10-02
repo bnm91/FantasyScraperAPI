@@ -10,8 +10,8 @@ from flask import request
 
 app = Flask(__name__)
 
-@app.route('/getMatchupDetails', methods=['POST','GET'])
-def getMatchupDetails():
+@app.route('/getMatchupDetails', methods=['GET'])
+def get_matchup_details():
     error = None
     if request.method == 'POST':
             return 'Hi there post'
@@ -25,8 +25,8 @@ def getMatchupDetails():
         elif request.args.get('leagueSize') == None:
             return 'error: leagueSize not sepcified'
         else:
-            outputString = MatchupDetails.getMatchupDetails(request.args.get('leagueId'), request.args.get('leagueName'), request.args.get('seasonId'), request.args.get('leagueSize'),  1, 1)
-            return outputString
+            output_string = MatchupDetails.get_matchup_details(request.args.get('leagueId'), request.args.get('leagueName'), request.args.get('seasonId'), request.args.get('leagueSize'),  1, 17)
+            return output_string
             # return {'text': 'testText'}
             # return 'text \r\n text'
 
