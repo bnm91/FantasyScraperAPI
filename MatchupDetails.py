@@ -5,31 +5,31 @@ import requests
 import os, csv
 
 
-def commaSeparateValues(rowDict):
-    rowString = ''
-    rowString += rowDict['Owner'] + ','
-    rowString += rowDict['Player'] + ','
-    rowString += rowDict['Week'] + ','
-    rowString += rowDict['Season'] + ','
-    rowString += rowDict['Player_Opponent'] + ','
-    rowString += rowDict['Player_Home'] + ','
-    rowString += rowDict['Points'] + ','
-    rowString += rowDict['Roster_Slot'] + ','
-    rowString += rowDict['League'] + ','
-    rowString += rowDict['NflTeam'] + ','
-    rowString += rowDict['NflPosition']
+def comma_separate_values(row_dict):
+    row_string = ''
+    row_string += row_dict['Owner'] + ','
+    row_string += row_dict['Player'] + ','
+    row_string += row_dict['Week'] + ','
+    row_string += row_dict['Season'] + ','
+    row_string += row_dict['Player_Opponent'] + ','
+    row_string += row_dict['Player_Home'] + ','
+    row_string += row_dict['Points'] + ','
+    row_string += row_dict['Roster_Slot'] + ','
+    row_string += row_dict['League'] + ','
+    row_string += row_dict['nfl_team'] + ','
+    row_string += row_dict['nfl_position']
 
-    return rowString
+    return row_string
 
-def csvListToCsvString(csvList):
-    csvString = ''
-    for row in csvList:
-        csvString += row
-        csvString += ' <br />'
-    return csvString
+def csv_list_to_csv_string(csv_list):
+    csv_string = ''
+    for row in csv_list:
+        csv_string += row
+        csv_string += ' <br />'
+    return csv_string
 
 
-def find_between_r(s, first, last):
+def find_between_r(s, first):
     try:
         start = s.rindex(first) + len(first)
         end = s.find(u'\xa0')
@@ -38,153 +38,145 @@ def find_between_r(s, first, last):
         return ""
 
 
-def getPlayerRow(row, home):
+def get_player_row(row, home):
 
-    returnRow = {}
+    return_row = {}
     columns = row.findChildren('td')
     
-    playerAnchors = columns[1].find_all('a')
+    player_anchors = columns[1].find_all('a')
 
-    if not playerAnchors:
-        returnRow['playerName'] = ''
+    if not player_anchors:
+        return_row['player_name'] = ''
     else:
-        returnRow['playerName'] = playerAnchors[0].get_text()
+        return_row['player_name'] = player_anchors[0].get_text()
     
+    return_row['roster_slot'] = columns[0].get_text()
+    return_row['player_opponent'] = columns[2].get_text()
+    return_row['home'] = home
 
-    returnRow['rosterSlot'] = columns[0].get_text()
-    returnRow['playerOpponent'] = columns[2].get_text()
-    returnRow['home'] = home
-
-    if '@' in returnRow['playerOpponent']:
-        returnRow['home'] = 0
-        returnRow['playerOpponent'] = returnRow['playerOpponent'][1:]
-        
+    if '@' in return_row['player_opponent']:
+        return_row['home'] = 0
+        return_row['player_opponent'] = return_row['player_opponent'][1:]
+    
     if  'BYE' in columns[2].get_text():
-        returnRow['points'] = columns[3].get_text()
-        returnRow['home']  = 1
+        return_row['points'] = columns[3].get_text()
+        return_row['home']  = 1
     else:
-        returnRow['points'] = columns[4].get_text()
+        return_row['points'] = columns[4].get_text()
         
-    if '--' in returnRow['points']:
-        returnRow['points'] = '0'
+    if '--' in return_row['points']:
+        return_row['points'] = '0'
     
     if columns[1] is None:
         s=''
     else:
         s = columns[1].get_text()
-        #print  str(wk) +  owner2
         
-        returnRow['nflPosition'] = ''
-        returnRow['nflTeam'] = ''
+        return_row['nfl_position'] = ''
+        return_row['nfl_team'] = ''
         
         if 'D/ST' in s:
-            returnRow['nflPosition'] = 'D/ST'
-            returnRow['nflTeam'] = ''
+            return_row['nfl_position'] = 'D/ST'
+            return_row['nfl_team'] = ''
         else:
             if ', ' in s:
                 print s
                 start = s.rindex(', ') + len (', ')
                 e = s.find(u'\xa0')
                 print s.split(u'\xa0')[1]
-                returnRow['nflTeam'] = s[start:e]
-                returnRow['nflPosition'] = s.split(u'\xa0')[1]
+                return_row['nfl_team'] = s[start:e]
+                return_row['nfl_position'] = s.split(u'\xa0')[1]
 
-    return returnRow
+    return return_row
 
 
-def createCSVRow(playerData, owner, week, seasonId, leagueName):
-    csvRow = {'Owner': owner, 'Player': playerData['playerName'], 'Week':str(week), 'Season':str(seasonId), 'Player_Opponent':playerData['playerOpponent'], 'Player_Home':str(playerData['home']), 'Points':playerData['points'], 'Roster_Slot':playerData['rosterSlot'], 'League':str(leagueName), 'NflTeam': playerData['nflTeam'], 'NflPosition':playerData['nflPosition']}
-    return commaSeparateValues(csvRow)
+def create_csv_row(player_data, owner, week, season_id, league_name):
+    csv_row = {'Owner': owner, 'Player': player_data['player_name'], 'Week':str(week), 'Season':str(season_id), 'Player_Opponent':player_data['player_opponent'], 'Player_Home':str(player_data['home']), 'Points':player_data['points'], 'Roster_Slot':player_data['roster_slot'], 'League':str(league_name), 'nfl_team': player_data['nfl_team'], 'nfl_position':player_data['nfl_position']}
+    return comma_separate_values(csv_row)
 
 
 #
 #scrapes Fantasy results player by player
-#for each week
 #
-def getMatchupDetails(leagueId, leagueName, seasonId, leagueSize, beginWeek=None, endWeek=None):
+def get_matchup_details(league_id, league_name, season_id, league_size, begin_week=None, end_week=None):
 
     try:
-        if beginWeek == None:
-            beginWeek = 1
-        if endWeek == None:
-            endWeek = 17
+        if begin_week is None:
+            begin_week = 1
+        if end_week is None:
+            end_week = 17
 
-        csvList = []
+        csv_list = []
 
-        headerRow = {'Owner': 'Owner', 'Player': 'Player', 'Week':'Week', 'Season':'Season', 'Player_Opponent':'Player_Opponent', 'Player_Home':'Player_Home', 'Points':'Points', 'Roster_Slot':'Roster_Slot', 'League':'League', 'NflTeam':'NflTeam', 'NflPosition': 'NflPosition'}
-        csvList.append(commaSeparateValues(headerRow))
+        HEADER_ROW = {'Owner': 'Owner', 'Player': 'Player', 'Week':'Week', 'Season':'Season', 'Player_Opponent':'Player_Opponent', 'Player_Home':'Player_Home', 'Points':'Points', 'Roster_Slot':'Roster_Slot', 'League':'League', 'nfl_team':'nfl_team', 'nfl_position': 'nfl_position'}
+        csv_list.append(comma_separate_values(HEADER_ROW))
 
-        for wk in range(beginWeek, endWeek + 1):
-            print wk
+        for wk in range(begin_week, end_week + 1):
             owners = []
         
-            for teamId in range(1, int(leagueSize) + 1):
-                #http://games.espn.go.com/ffl/boxscorequick?leagueId=457631&teamId=1&scoringPeriodId=1&seasonId=2015&view=scoringperiod&version=quick
+            for team_id in range(1, int(league_size) + 1):
+                #example http://games.espn.go.com/ffl/boxscorequick?leagueId=457631&teamId=1&scoringPeriodId=1&seasonId=2015&view=scoringperiod&version=quick
 
-                r = requests.get('http://games.espn.go.com/ffl/boxscorequick?leagueId=' + str(leagueId) + '&teamId=' + str(teamId) + '&scoringPeriodId=' + str(wk) + '&seasonId=' + str(seasonId) + '&view=scoringperiod&version=quick')
-                
-                data = r.text
-
+                response = requests.get('http://games.espn.go.com/ffl/boxscorequick?leagueId=' + str(league_id) + '&teamId=' + str(team_id) + '&scoringPeriodId=' + str(wk) + '&seasonId=' + str(season_id) + '&view=scoringperiod&version=quick')
+                data = response.text
                 soup = BeautifulSoup(data)
+                owner_divs = soup.find_all('div', class_='teamInfoOwnerData')
+
+                if len(owner_divs) > 0:
                 
-                ownerDivs = soup.find_all('div', class_='teamInfoOwnerData')
-                
-                
-                if len(ownerDivs) > 0:
-                
-                    owner1 = ownerDivs[0].get_text()
-                    if len(ownerDivs) == 1:
+                    owner_home = owner_divs[0].get_text()
+                    if len(owner_divs) == 1:
                         print 'only 1 owner'
                     else:
-                        owner2 = ownerDivs[1].get_text()		
+                        owner_away = owner_divs[1].get_text()
                         
-                        if owner2 not in owners and owner1 not in owners:
-                            owners.append(owner2)
-                            owners.append(owner1)
+                        if owner_away not in owners and owner_home not in owners:
+                            owners.append(owner_away)
+                            owners.append(owner_home)
                             
-                            teamTables = soup.find_all('table', class_='playerTableTable')
+                            team_tables = soup.find_all('table', class_='playerTableTable')
                             
-                            team1StartersTable = teamTables[0]
-                            team1BenchTable = teamTables[1]
+                            home_team_starters_table = team_tables[0]
+                            home_team_bench_table = team_tables[1]
                             
-                            team2StartersTable = teamTables[2]
-                            team2BenchTable = teamTables[3]
+                            away_team_starters_table = team_tables[2]
+                            away_team_bench_table = team_tables[3]
                             
-                            team1PlayerRows = team1StartersTable.find_all('tr', class_='pncPlayerRow')
+                            home_team_player_rows = home_team_starters_table.find_all('tr', class_='pncPlayerRow')
                             
                             #------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
                             # Team 1 Starters
-                            for row in team1PlayerRows:
+                            for row in home_team_player_rows:
 
-                                playerData = getPlayerRow(row, 1)
-                                csvList.append(createCSVRow(playerData, owner1, wk, seasonId, leagueName))
+                                player_data = get_player_row(row, 1)
+                                csv_list.append(create_csv_row(player_data, owner_home, wk, season_id, league_name))
                             
                             #------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
                             # Team 1 Bench
-                            team1BenchPlayerRows = team1BenchTable.find_all('tr', class_='pncPlayerRow')
+                            home_team_bench_player_rows = home_team_bench_table.find_all('tr', class_='pncPlayerRow')
                             
-                            for row in team1BenchPlayerRows:
-                                playerData = getPlayerRow(row, 1)                                 
+                            for row in home_team_bench_player_rows:
+                                player_data = get_player_row(row, 1)                                 
                                 
-                                csvList.append(createCSVRow(playerData, owner1, wk, seasonId, leagueName))
+                                csv_list.append(create_csv_row(player_data, owner_home, wk, season_id, league_name))
                             
                             #------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
                             # Team 2 Starters
-                            team2PlayerRows = team2StartersTable.find_all('tr', class_='pncPlayerRow')
+                            away_team_player_rows = away_team_starters_table.find_all('tr', class_='pncPlayerRow')
                             
-                            for row in team2PlayerRows:
-                                playerData = getPlayerRow(row, 0)
-                                csvList.append(createCSVRow(playerData, owner2, wk, seasonId, leagueName))
+                            for row in away_team_player_rows:
+                                player_data = get_player_row(row, 0)
+                                csv_list.append(create_csv_row(player_data, owner_away, wk, season_id, league_name))
                             
                             #------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
                             # Team 2 Bench Players
-                            team2BenchPlayerRows = team2BenchTable.find_all('tr', class_='pncPlayerRow')
+                            away_team_bench_player_rows = away_team_bench_table.find_all('tr', class_='pncPlayerRow')
                             
-                            for row in team2BenchPlayerRows:
-                                playerData = getPlayerRow(row, 0)                             
+                            for row in away_team_bench_player_rows:
+                                player_data = get_player_row(row, 0)
                                 
-                                csvList.append(createCSVRow(playerData, owner2, wk, seasonId, leagueName))
+                                csv_list.append(create_csv_row(player_data, owner_away, wk, season_id, league_name))
 
-        return csvListToCsvString(csvList)            
-    except Exception as e:
-        return 'Error occurred : ' + str(e)
+        return csv_list_to_csv_string(csv_list)            
+    except Exception as ex:
+        return 'Error occurred : ' + str(ex)
