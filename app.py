@@ -16,7 +16,6 @@ def get_matchup_details():
     if request.method == 'POST':
             return 'Hi there post'
     else:
-        print request.args
         if request.args.get('leagueId') == None:
             return 'error: leagueId not specified'
         elif request.args.get('leagueName') == None:

@@ -5,4 +5,11 @@ name = "pypi"
 
 [dev-packages]
 
+
 [packages]
+
+flask = "*"
+gunicorn = "*"
+lxml = "*"
+"beautifulsoup4" = "*"
+requests = "*"
