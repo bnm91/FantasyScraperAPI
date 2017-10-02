@@ -10,7 +10,7 @@ from flask import request
 
 app = Flask(__name__)
 
-@app.route('/getMatchupDetails', methods=['POST','GET'])
+@app.route('/getMatchupDetails', methods=['GET'])
 def getMatchupDetails():
     error = None
     if request.method == 'POST':
