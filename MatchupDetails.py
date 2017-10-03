@@ -134,10 +134,10 @@ def get_player_row(row, home):
             return_row['nfl_team'] = ''
         else:
             if ', ' in s:
-                print s
+                # print s
                 start = s.rindex(', ') + len (', ')
                 e = s.find(u'\xa0')
-                print s.split(u'\xa0')[1]
+                # print s.split(u'\xa0')[1]
                 return_row['nfl_team'] = s[start:e]
                 return_row['nfl_position'] = s.split(u'\xa0')[1]
 
