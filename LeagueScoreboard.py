@@ -28,11 +28,11 @@ def get_league_scoreboard(league_id, league_name, season_id, begin_week=None, en
         response = requests.get(url) 
         data = response.text
         soup = BeautifulSoup(data)
-        matchups = soup.find_all('table', class_='ptsBased matchup') #narrowing down to only the tables on the page with scoreboard information
+        matchupTables = soup.find_all('table', class_='ptsBased matchup') #narrowing down to only the tables on the page with scoreboard information
 
         scoreboard_data = {}
 
-        for matchup in matchups:
+        for matchup in matchupTables:
             scoreboard_data = get_scoreboard_data(matchup)
             csv_list.append(create_csv_row(scoreboard_data, wk, season_id, league_name))
 
