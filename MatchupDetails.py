@@ -20,7 +20,7 @@ def get_matchup_details(league_id, league_name, season_id, league_size, begin_we
         HEADER_ROW = {'Owner': 'Owner', 'Player': 'Player', 'Week':'Week', 'Season':'Season', 'Player_Opponent':'Player_Opponent', 'Player_Home':'Player_Home', 'Points':'Points', 'Roster_Slot':'Roster_Slot', 'League':'League', 'nfl_team':'nfl_team', 'nfl_position': 'nfl_position'}
         csv_list.append(comma_separate_values(HEADER_ROW))
 
-        for wk in range(begin_week, end_week + 1):
+        for wk in range(int(begin_week), int(end_week) + 1):
             owners = []
         
             for team_id in range(1, int(league_size) + 1):
