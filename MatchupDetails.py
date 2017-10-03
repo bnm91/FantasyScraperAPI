@@ -35,7 +35,7 @@ def get_matchup_details(league_id, league_name, season_id, league_size, begin_we
                 
                     owner_home = owner_divs[0].get_text()
                     if len(owner_divs) == 1:
-                        print 'only 1 owner'
+                        #print 'only 1 owner'
                     else:
                         owner_away = owner_divs[1].get_text()
                         
