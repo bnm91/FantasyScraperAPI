@@ -7,7 +7,7 @@ from flask import request
 
 app = Flask(__name__)
 
-@app.route('/getMatchupDetails', methods=['GET'])
+@app.route('/MatchupDetails', methods=['GET'])
 def get_matchup_details():
     error = None
     begin_week = None
@@ -34,7 +34,7 @@ def get_matchup_details():
             return output
 
 
-@app.route('/getMatchupDetails/csv', methods=['GET'])
+@app.route('/MatchupDetails/csv', methods=['GET'])
 def get_matchup_details_csv():
     error = None
     begin_week = None
@@ -61,7 +61,7 @@ def get_matchup_details_csv():
             return output
 
 
-@app.route('/getLeagueScoreboard', methods=['GET'])
+@app.route('/LeagueScoreboard', methods=['GET'])
 def get_league_scoreboard():
     error = None
     begin_week = None
@@ -86,7 +86,7 @@ def get_league_scoreboard():
             return output
 
 
-@app.route('/getLeagueScoreboard/csv', methods=['GET'])
+@app.route('/LeagueScoreboard/csv', methods=['GET'])
 def get_league_scoreboard_csv():
     error = None
     begin_week = None
