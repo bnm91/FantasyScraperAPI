@@ -2,12 +2,23 @@ from bs4 import BeautifulSoup
 import lxml
 import requests
 import os, csv
+import json
 
+HEADER_ROW = {'Owner': 'Owner', 'Player': 'Player', 'Week':'Week', 'Season':'Season', 'Player_Opponent':'Player_Opponent', 'Player_Home':'Player_Home', 'Points':'Points', 'Roster_Slot':'Roster_Slot', 'League':'League', 'nfl_team':'nfl_team', 'nfl_position': 'nfl_position'}
+
+
+def get_matchup_details(league_id, league_name, season_id, league_size, begin_week=None, end_week=None):
+    output_dict = scrape_matchup_details(league_id, league_name, season_id, league_size, begin_week, end_week)
+    return json.dumps(output_dict)
+
+def get_matchup_details_csv(league_id, league_name, season_id, league_size, begin_week=None, end_week=None):
+    output_dict = scrape_matchup_details(league_id, league_name, season_id, league_size, begin_week, end_week)
+    return create_csv_from_json(output_dict, HEADER_ROW)
 
 #
 #scrapes Fantasy results player by player
 #
-def get_matchup_details(league_id, league_name, season_id, league_size, begin_week=None, end_week=None):
+def scrape_matchup_details(league_id, league_name, season_id, league_size, begin_week=None, end_week=None):
 
     try:
         if begin_week is None:
@@ -15,10 +26,11 @@ def get_matchup_details(league_id, league_name, season_id, league_size, begin_we
         if end_week is None:
             end_week = 17
 
-        csv_list = []
+        matchup_details_list = []
+        output_dict = {}
 
-        HEADER_ROW = {'Owner': 'Owner', 'Player': 'Player', 'Week':'Week', 'Season':'Season', 'Player_Opponent':'Player_Opponent', 'Player_Home':'Player_Home', 'Points':'Points', 'Roster_Slot':'Roster_Slot', 'League':'League', 'nfl_team':'nfl_team', 'nfl_position': 'nfl_position'}
-        csv_list.append(comma_separate_values(HEADER_ROW))
+        # HEADER_ROW = {'Owner': 'Owner', 'Player': 'Player', 'Week':'Week', 'Season':'Season', 'Player_Opponent':'Player_Opponent', 'Player_Home':'Player_Home', 'Points':'Points', 'Roster_Slot':'Roster_Slot', 'League':'League', 'nfl_team':'nfl_team', 'nfl_position': 'nfl_position'}
+        # matchup_details_list.append(comma_separate_values(HEADER_ROW))
 
         for wk in range(int(begin_week), int(end_week) + 1):
             owners = []
@@ -59,7 +71,7 @@ def get_matchup_details(league_id, league_name, season_id, league_size, begin_we
                             for row in home_team_player_rows:
 
                                 player_data = get_player_row(row, 1)
-                                csv_list.append(create_csv_row(player_data, owner_home, wk, season_id, league_name))
+                                matchup_details_list.append(create_row_object(player_data, owner_home, wk, season_id, league_name))
                             
                             #------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
                             # Team 1 Bench
@@ -68,7 +80,7 @@ def get_matchup_details(league_id, league_name, season_id, league_size, begin_we
                             for row in home_team_bench_player_rows:
                                 player_data = get_player_row(row, 1)                                 
                                 
-                                csv_list.append(create_csv_row(player_data, owner_home, wk, season_id, league_name))
+                                matchup_details_list.append(create_row_object(player_data, owner_home, wk, season_id, league_name))
                             
                             #------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
                             # Team 2 Starters
@@ -76,7 +88,7 @@ def get_matchup_details(league_id, league_name, season_id, league_size, begin_we
                             
                             for row in away_team_player_rows:
                                 player_data = get_player_row(row, 0)
-                                csv_list.append(create_csv_row(player_data, owner_away, wk, season_id, league_name))
+                                matchup_details_list.append(create_row_object(player_data, owner_away, wk, season_id, league_name))
                             
                             #------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
                             # Team 2 Bench Players
@@ -85,9 +97,11 @@ def get_matchup_details(league_id, league_name, season_id, league_size, begin_we
                             for row in away_team_bench_player_rows:
                                 player_data = get_player_row(row, 0)
                                 
-                                csv_list.append(create_csv_row(player_data, owner_away, wk, season_id, league_name))
+                                matchup_details_list.append(create_row_object(player_data, owner_away, wk, season_id, league_name))
+        
+        output_dict['matchup_details'] = matchup_details_list
 
-        return csv_list_to_csv_string(csv_list)            
+        return output_dict          
     except Exception as ex:
         return 'Error occurred : ' + str(ex)
 
@@ -144,9 +158,19 @@ def get_player_row(row, home):
     return return_row
 
 
-def create_csv_row(player_data, owner, week, season_id, league_name):
+def create_csv_from_json(matchup_details_json, header_row):
+    csv_list = []
+    csv_list.append(comma_separate_values(header_row))
+
+    for details in matchup_details_json['matchup_details']:
+        csv_list.append(comma_separate_values(details))
+    
+    return csv_list_to_csv_string(csv_list)
+
+
+def create_row_object(player_data, owner, week, season_id, league_name):
     csv_row = {'Owner': owner, 'Player': player_data['player_name'], 'Week':str(week), 'Season':str(season_id), 'Player_Opponent':player_data['player_opponent'], 'Player_Home':str(player_data['home']), 'Points':player_data['points'], 'Roster_Slot':player_data['roster_slot'], 'League':str(league_name), 'nfl_team': player_data['nfl_team'], 'nfl_position':player_data['nfl_position']}
-    return comma_separate_values(csv_row)
+    return csv_row
 
 
 def comma_separate_values(row_dict):

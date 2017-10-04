@@ -34,8 +34,35 @@ def get_matchup_details():
         elif request.args.get('leagueSize') == None:
             return 'error: leagueSize not sepcified'
         else:
-            output_string = MatchupDetails.get_matchup_details(request.args.get('leagueId'), request.args.get('leagueName'), request.args.get('seasonId'), request.args.get('leagueSize'), end_week, begin_week)
-            return output_string
+            output = MatchupDetails.get_matchup_details(request.args.get('leagueId'), request.args.get('leagueName'), request.args.get('seasonId'), request.args.get('leagueSize'), end_week, begin_week)
+            return output
+
+
+@app.route('/getMatchupDetails/csv', methods=['GET'])
+def get_matchup_details_csv():
+    error = None
+    begin_week = None
+    end_week = None
+
+    if request.method == 'POST':
+            return 'Hi there post'
+    else:
+        if request.args.get('beginWeek') is not None:
+            begin_week = request.args.get('beginWeek')
+        if request.args.get('endWeek') is not None:
+            end_week = request.args.get('endWeek')
+
+        if request.args.get('leagueId') == None:
+            return 'error: leagueId not specified'
+        elif request.args.get('leagueName') == None:
+            return 'error: leagueName not specified'
+        elif request.args.get('seasonId') == None:
+            return 'error: seasonId not specified'
+        elif request.args.get('leagueSize') == None:
+            return 'error: leagueSize not sepcified'
+        else:
+            output = MatchupDetails.get_matchup_details_csv(request.args.get('leagueId'), request.args.get('leagueName'), request.args.get('seasonId'), request.args.get('leagueSize'), end_week, begin_week)
+            return output
 
 
 @app.route('/getLeagueScoreboard', methods=['GET'])
