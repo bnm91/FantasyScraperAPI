@@ -86,8 +86,32 @@ def get_league_scoreboard():
         elif request.args.get('seasonId') == None:
             return 'error: seasonId not specified'
         else:
-            output_string = LeagueScoreboard.get_league_scoreboard(request.args.get('leagueId'), request.args.get('leagueName'), request.args.get('seasonId'), begin_week, end_week)
-            return output_string
+            output = LeagueScoreboard.get_league_scoreboard(request.args.get('leagueId'), request.args.get('leagueName'), request.args.get('seasonId'), begin_week, end_week)
+            return output
+
+@app.route('/getLeagueScoreboard/csv', methods=['GET'])
+def get_league_scoreboard_csv():
+    error = None
+    begin_week = None
+    end_week = None
+    
+    if request.method == 'POST':
+            return 'Hi there post'
+    else:
+        if request.args.get('beginWeek') is not None:
+            begin_week = request.args.get('beginWeek')
+        if request.args.get('endWeek') is not None:
+            end_week = request.args.get('endWeek')
+        
+        if request.args.get('leagueId') == None:
+            return 'error: leagueId not specified'
+        elif request.args.get('leagueName') == None:
+            return 'error: leagueName not specified'
+        elif request.args.get('seasonId') == None:
+            return 'error: seasonId not specified'
+        else:
+            output = LeagueScoreboard.get_league_scoreboard_csv(request.args.get('leagueId'), request.args.get('leagueName'), request.args.get('seasonId'), begin_week, end_week)
+            return output
 
 if __name__ == '__main__':
     # Bind to PORT if defined, otherwise default to 5000.
