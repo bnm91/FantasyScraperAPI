@@ -5,10 +5,6 @@ from flask import Flask
 from flask import request
 
 
-##TODO: add begin and end week params
-##TODO: add number of teams
-##TODO: add exception handling
-
 app = Flask(__name__)
 
 @app.route('/getMatchupDetails', methods=['GET'])
@@ -88,6 +84,7 @@ def get_league_scoreboard():
         else:
             output = LeagueScoreboard.get_league_scoreboard(request.args.get('leagueId'), request.args.get('leagueName'), request.args.get('seasonId'), begin_week, end_week)
             return output
+
 
 @app.route('/getLeagueScoreboard/csv', methods=['GET'])
 def get_league_scoreboard_csv():

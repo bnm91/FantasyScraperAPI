@@ -14,12 +14,11 @@ def get_league_scoreboard(league_id, league_name, season_id, begin_week=None, en
 
 def get_league_scoreboard_csv(league_id, league_name, season_id, begin_week=None, end_week=None):
     output_dict = scrape_league_scoreboard(league_id, league_name, season_id, begin_week, end_week)
-    return create_csv_from_json(output_dict, HEADER_ROW)
+    return create_csv_from_dict(output_dict, HEADER_ROW)
 
 #
 #scrapes fantasy scoreboard results
-# returns: week, season, home team, home team points, away team, away team points
-#
+# returns dict: week, season, home team, home team points, away team, away team points
 def scrape_league_scoreboard(league_id, league_name, season_id, begin_week=None, end_week=None):
     if begin_week is None:
         begin_week = 1
@@ -64,7 +63,7 @@ def get_scoreboard_data(matchup):
     return scoreboard_data
 
 
-def create_csv_from_json(league_scoreboard, header_row):
+def create_csv_from_dict(league_scoreboard, header_row):
     csv_list = []
     csv_list.append(comma_separate_values(header_row))
 
@@ -77,11 +76,6 @@ def create_csv_from_json(league_scoreboard, header_row):
 def create_row_object(scoreboard_data, week, season_id, league_name):
     csv_row = {'Week': week, 'Season': season_id, 'Home': scoreboard_data['owner_home'], 'Scoreboard_Points_Home': scoreboard_data['score_home'], 'Away': scoreboard_data['owner_away'], 'Scoreboard_Points_Away': scoreboard_data['score_away'], 'League_Name': league_name}
     return csv_row
-
-#creates a dictionary describing a League Scoreboard row and then breaks that into a csv row string
-def create_csv_row(scoreboard_data, week, season_id, league_name):
-    csv_row = {'Week': week, 'Season': season_id, 'Home': scoreboard_data['owner_home'], 'Scoreboard_Points_Home': scoreboard_data['score_home'], 'Away': scoreboard_data['owner_away'], 'Scoreboard_Points_Away': scoreboard_data['score_away'], 'League_Name': league_name}
-    return comma_separate_values(csv_row)
 
 
 # breaks dictionary describing a League Scoreboard row into a csv row

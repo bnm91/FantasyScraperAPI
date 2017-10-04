@@ -13,7 +13,7 @@ def get_matchup_details(league_id, league_name, season_id, league_size, begin_we
 
 def get_matchup_details_csv(league_id, league_name, season_id, league_size, begin_week=None, end_week=None):
     output_dict = scrape_matchup_details(league_id, league_name, season_id, league_size, begin_week, end_week)
-    return create_csv_from_json(output_dict, HEADER_ROW)
+    return create_csv_from_dict(output_dict, HEADER_ROW)
 
 #
 #scrapes Fantasy results player by player
@@ -28,9 +28,6 @@ def scrape_matchup_details(league_id, league_name, season_id, league_size, begin
 
         matchup_details_list = []
         output_dict = {}
-
-        # HEADER_ROW = {'Owner': 'Owner', 'Player': 'Player', 'Week':'Week', 'Season':'Season', 'Player_Opponent':'Player_Opponent', 'Player_Home':'Player_Home', 'Points':'Points', 'Roster_Slot':'Roster_Slot', 'League':'League', 'nfl_team':'nfl_team', 'nfl_position': 'nfl_position'}
-        # matchup_details_list.append(comma_separate_values(HEADER_ROW))
 
         for wk in range(int(begin_week), int(end_week) + 1):
             owners = []
@@ -158,7 +155,7 @@ def get_player_row(row, home):
     return return_row
 
 
-def create_csv_from_json(matchup_details_json, header_row):
+def create_csv_from_dict(matchup_details_json, header_row):
     csv_list = []
     csv_list.append(comma_separate_values(header_row))
 
