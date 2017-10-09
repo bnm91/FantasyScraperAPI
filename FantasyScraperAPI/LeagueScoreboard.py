@@ -3,7 +3,7 @@ import lxml
 import requests
 import os, csv
 import json
-from fantasyScaperUtils import utils
+from fantasyScraperUtils import utils
 
 HEADER_ROW = {'Week': 'Week', 'Season': 'Season', 'Home': 'Home_Team', 'Scoreboard_Points_Home':'Scoreboard_Points_Home', 'Away': 'Away', 'Scoreboard_Points_Away': 'Scoreboard_Points_Away'}
 
