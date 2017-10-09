@@ -1,8 +1,9 @@
 __all__ = ['LeagueScoreboard',
-           'MatchupDetails'
+           'MatchupDetails',
+           'utils'
           ]
 
 import FantasyScraperAPI.LeagueScoreboard
 import FantasyScraperAPI.MatchupDetails
-
+import FantasyScraperAPI.utils
 
