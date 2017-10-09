@@ -2,5 +2,5 @@ __all__ = ['LeagueScoreboard',
            'MatchupDetails'
           ]
 
-import LeagueScoreboard
-import MatchupDetails
+from .LeagueScoreboard import *
+from .MatchupDetails import *
