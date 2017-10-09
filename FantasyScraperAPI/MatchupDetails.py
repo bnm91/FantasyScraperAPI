@@ -3,17 +3,19 @@ import lxml
 import requests
 import os, csv
 import json
+import utils
 
 HEADER_ROW = {'Owner': 'Owner', 'Player': 'Player', 'Week':'Week', 'Season':'Season', 'Player_Opponent':'Player_Opponent', 'Player_Home':'Player_Home', 'Points':'Points', 'Roster_Slot':'Roster_Slot', 'League':'League', 'nfl_team':'nfl_team', 'nfl_position': 'nfl_position'}
 
 
 def get_matchup_details(league_id, league_name, season_id, league_size, begin_week=None, end_week=None):
-    output_dict = scrape_matchup_details(league_id, league_name, season_id, league_size, begin_week, end_week)
+    output_dict = {}
+    output_dict['matchup_details'] = scrape_matchup_details(league_id, league_name, season_id, league_size, begin_week, end_week)
     return json.dumps(output_dict)
 
 def get_matchup_details_csv(league_id, league_name, season_id, league_size, begin_week=None, end_week=None):
-    output_dict = scrape_matchup_details(league_id, league_name, season_id, league_size, begin_week, end_week)
-    return create_csv_from_dict(output_dict, HEADER_ROW)
+    row_list = scrape_matchup_details(league_id, league_name, season_id, league_size, begin_week, end_week)
+    return utils.create_csv_from_list(row_list, HEADER_ROW)
 
 #
 #scrapes Fantasy results player by player
@@ -60,47 +62,17 @@ def scrape_matchup_details(league_id, league_name, season_id, league_size, begin
                             
                             away_team_starters_table = team_tables[2]
                             away_team_bench_table = team_tables[3]
-                            
-                            home_team_player_rows = home_team_starters_table.find_all('tr', class_='pncPlayerRow')
-                            
-                            #------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-                            # Team 1 Starters
-                            for row in home_team_player_rows:
 
-                                player_data = get_player_row(row, 1)
-                                matchup_details_list.append(create_row_object(player_data, owner_home, wk, season_id, league_name))
-                            
-                            #------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-                            # Team 1 Bench
-                            home_team_bench_player_rows = home_team_bench_table.find_all('tr', class_='pncPlayerRow')
-                            
-                            for row in home_team_bench_player_rows:
-                                player_data = get_player_row(row, 1)                                 
-                                
-                                matchup_details_list.append(create_row_object(player_data, owner_home, wk, season_id, league_name))
-                            
-                            #------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-                            # Team 2 Starters
-                            away_team_player_rows = away_team_starters_table.find_all('tr', class_='pncPlayerRow')
-                            
-                            for row in away_team_player_rows:
-                                player_data = get_player_row(row, 0)
-                                matchup_details_list.append(create_row_object(player_data, owner_away, wk, season_id, league_name))
-                            
-                            #------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-                            # Team 2 Bench Players
-                            away_team_bench_player_rows = away_team_bench_table.find_all('tr', class_='pncPlayerRow')
-                            
-                            for row in away_team_bench_player_rows:
-                                player_data = get_player_row(row, 0)
-                                
-                                matchup_details_list.append(create_row_object(player_data, owner_away, wk, season_id, league_name))
-        
-        output_dict['matchup_details'] = matchup_details_list
-
-        return output_dict          
+                            #TODO: clean up this function and call so it's more readable
+                            matchup_details_list.extend(get_matchup_details_from_table(home_team_starters_table, owner_home, wk, season_id, league_name))
+                            matchup_details_list.extend(get_matchup_details_from_table(home_team_bench_table, owner_home, wk, season_id, league_name))
+                            matchup_details_list.extend(get_matchup_details_from_table(away_team_starters_table, owner_away, wk, season_id, league_name))
+                            matchup_details_list.extend(get_matchup_details_from_table(away_team_bench_table, owner_away, wk, season_id, league_name))
+                        
+        return matchup_details_list          
     except Exception as ex:
         return 'Error occurred : ' + str(ex)
+           
 
 
 def get_player_row(row, home):
@@ -133,7 +105,7 @@ def get_player_row(row, home):
         return_row['points'] = '0'
     
     if columns[1] is None:
-        s=''
+        s =''
     else:
         s = columns[1].get_text()
         
@@ -155,53 +127,16 @@ def get_player_row(row, home):
     return return_row
 
 
-def create_csv_from_dict(matchup_details_json, header_row):
-    csv_list = []
-    csv_list.append(comma_separate_values(header_row))
-
-    for details in matchup_details_json['matchup_details']:
-        csv_list.append(comma_separate_values(details))
+def get_matchup_details_from_table(table, owner_name, wk, season_id, league_name):
+    return_list = []
+    matchup_detail_rows = table.find_all('tr', class_='pncPlayerRow')
+    for row in matchup_detail_rows:
+        player_data = get_player_row(row, 1)                                 
+        return_list.append(create_row_object(player_data, owner_name, wk, season_id, league_name))
     
-    return csv_list_to_csv_string(csv_list)
+    return return_list
 
 
 def create_row_object(player_data, owner, week, season_id, league_name):
     csv_row = {'Owner': owner, 'Player': player_data['player_name'], 'Week':str(week), 'Season':str(season_id), 'Player_Opponent':player_data['player_opponent'], 'Player_Home':str(player_data['home']), 'Points':player_data['points'], 'Roster_Slot':player_data['roster_slot'], 'League':str(league_name), 'nfl_team': player_data['nfl_team'], 'nfl_position':player_data['nfl_position']}
     return csv_row
-
-
-def comma_separate_values(row_dict):
-    row_string = ''
-    row_string += row_dict['Owner'] + ','
-    row_string += row_dict['Player'] + ','
-    row_string += row_dict['Week'] + ','
-    row_string += row_dict['Season'] + ','
-    row_string += row_dict['Player_Opponent'] + ','
-    row_string += row_dict['Player_Home'] + ','
-    row_string += row_dict['Points'] + ','
-    row_string += row_dict['Roster_Slot'] + ','
-    row_string += row_dict['League'] + ','
-    row_string += row_dict['nfl_team'] + ','
-    row_string += row_dict['nfl_position']
-
-    return row_string
-
-def csv_list_to_csv_string(csv_list):
-    csv_string = ''
-    for row in csv_list:
-        csv_string += row
-        csv_string += ' <br />'
-    return csv_string
-
-
-def find_between_r(s, first):
-    try:
-        start = s.rindex(first) + len(first)
-        end = s.find(u'\xa0')
-        return s[start:end]
-    except ValueError:
-        return ""
-
-
-
-
