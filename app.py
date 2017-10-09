@@ -1,6 +1,7 @@
 import os
-import MatchupDetails
-import LeagueScoreboard
+import FantasyScraperAPI
+# from FantasyScraperAPI import LeagueScoreboard
+# from FantasyScraperAPI import MatchupDetails
 from flask import Flask
 from flask import request
 
@@ -30,7 +31,7 @@ def get_matchup_details():
         elif request.args.get('leagueSize') == None:
             return 'error: leagueSize not sepcified'
         else:
-            output = MatchupDetails.get_matchup_details(request.args.get('leagueId'), request.args.get('leagueName'), request.args.get('seasonId'), request.args.get('leagueSize'), end_week, begin_week)
+            output = FantasyScraperAPI.MatchupDetails.get_matchup_details(request.args.get('leagueId'), request.args.get('leagueName'), request.args.get('seasonId'), request.args.get('leagueSize'), end_week, begin_week)
             return output
 
 
@@ -57,7 +58,7 @@ def get_matchup_details_csv():
         elif request.args.get('leagueSize') == None:
             return 'error: leagueSize not sepcified'
         else:
-            output = MatchupDetails.get_matchup_details_csv(request.args.get('leagueId'), request.args.get('leagueName'), request.args.get('seasonId'), request.args.get('leagueSize'), end_week, begin_week)
+            output = FantasyScraperAPI.MatchupDetails.get_matchup_details_csv(request.args.get('leagueId'), request.args.get('leagueName'), request.args.get('seasonId'), request.args.get('leagueSize'), end_week, begin_week)
             return output
 
 
@@ -82,7 +83,7 @@ def get_league_scoreboard():
         elif request.args.get('seasonId') == None:
             return 'error: seasonId not specified'
         else:
-            output = LeagueScoreboard.get_league_scoreboard(request.args.get('leagueId'), request.args.get('leagueName'), request.args.get('seasonId'), begin_week, end_week)
+            output = FantasyScraperAPI.LeagueScoreboard.get_league_scoreboard(request.args.get('leagueId'), request.args.get('leagueName'), request.args.get('seasonId'), begin_week, end_week)
             return output
 
 
@@ -107,7 +108,7 @@ def get_league_scoreboard_csv():
         elif request.args.get('seasonId') == None:
             return 'error: seasonId not specified'
         else:
-            output = LeagueScoreboard.get_league_scoreboard_csv(request.args.get('leagueId'), request.args.get('leagueName'), request.args.get('seasonId'), begin_week, end_week)
+            output = FantasyScraperAPI.LeagueScoreboard.get_league_scoreboard_csv(request.args.get('leagueId'), request.args.get('leagueName'), request.args.get('seasonId'), begin_week, end_week)
             return output
 
 if __name__ == '__main__':
