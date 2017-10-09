@@ -3,7 +3,7 @@ import lxml
 import requests
 import os, csv
 import json
-import utils
+from fantasyScaperUtils import utils
 
 HEADER_ROW = {'Owner': 'Owner', 'Player': 'Player', 'Week':'Week', 'Season':'Season', 'Player_Opponent':'Player_Opponent', 'Player_Home':'Player_Home', 'Points':'Points', 'Roster_Slot':'Roster_Slot', 'League':'League', 'nfl_team':'nfl_team', 'nfl_position': 'nfl_position'}
 
