@@ -1,6 +1,6 @@
 import os
-import MatchupDetails
-import LeagueScoreboard
+from FantasyScraperAPI import LeagueScoreboard
+from FantasyScraperAPI import MatchupDetails
 from flask import Flask
 from flask import request
 
