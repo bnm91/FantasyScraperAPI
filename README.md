@@ -4,7 +4,7 @@
 
 ### Base URL
 
-https://fantasy-scraper-api.herokuapp.com/
+https://espn-fantasy-api.herokuapp.com/
 
 
 
