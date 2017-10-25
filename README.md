@@ -12,7 +12,7 @@ https://espn-fantasy-api.herokuapp.com/
 *For all GET requests, you can add /csv to the URL to return data as a CSV instead of JSON*
 
 Example:
-https://fantasy-scraper-api.herokuapp.com/LeagueScoreboard/csv?leagueId=1234&seasonId=2017&leagueName=XXXX&beginWeek=1&endWeek=4
+https://espn-fantasy-api.herokuapp.com/LeagueScoreboard/csv?leagueId=1234&seasonId=2017&leagueName=XXXX&beginWeek=1&endWeek=4
 
 
 ### Matchup Details
@@ -22,7 +22,7 @@ https://fantasy-scraper-api.herokuapp.com/LeagueScoreboard/csv?leagueId=1234&sea
 ###### GET MatchupDetails
 
 Example:
-https://fantasy-scraper-api.herokuapp.com/MatchupDetails?leagueId=1234&seasonId=2017&leagueSize=10&leagueName=PanthersFanLeague
+https://espn-fantasy-api.herokuapp.com/MatchupDetails?leagueId=1234&seasonId=2017&leagueSize=10&leagueName=PanthersFanLeague
 
 ###### Parameters
 
@@ -53,7 +53,7 @@ https://fantasy-scraper-api.herokuapp.com/MatchupDetails?leagueId=1234&seasonId=
 ###### GET LeagueScoreboard
 
 Example:
-https://fantasy-scraper-api.herokuapp.com/LeagueScoreboard?leagueId=1234&seasonId=2017&leagueName=XXXX&beginWeek=1&endWeek=4
+https://espn-fantasy-api.herokuapp.com/LeagueScoreboard?leagueId=1234&seasonId=2017&leagueName=XXXX&beginWeek=1&endWeek=4
 
 ###### Parameters
 
